@@ -34,6 +34,9 @@
                 <span class="date">
                     {{ post.date }}
                 </span>
+                <a href="{{post.get_absolute_url}}">Read more ...</a>
+
+                </a>
                 <p class="excerpt">
                     {{ post.content|truncatewords:20 }}
                 </p>
