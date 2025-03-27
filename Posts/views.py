@@ -1,5 +1,8 @@
 from django.shortcuts import render
+
 from Posts.models import Post
+from django.views.generic import DetailView
+from django.shortcuts import get_object_or_404
 
 def post_list(request):
     # list all the posts
@@ -7,11 +10,15 @@ def post_list(request):
     
     return render(request, 'post_list.html', {'all_posts': all_posts})
 
-def detail_view(request, post_slug):
-    # get the post with the given id
-    post = Post.objects.get(slug=post_slug)
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'post_detail.html'
+    context_object_name = 'post'
     
-    return render(request, 'blog_detail.html', {'post': post})
+    def get_object(self, queryset=None):
+        # get the post by slug
+        slug = self.kwargs.get('post_slug')
+        return get_object_or_404(Post, slug=slug)
 
 
 """
