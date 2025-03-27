@@ -1,3 +1,7 @@
+"""
+This file contains the views for the Posts app. one of the views is FBV (Function Based View) and the other one is CBV (Class Based View). this isn't have any reason I just wanted to use both of them.
+"""
+
 from django.shortcuts import render
 
 from Posts.models import Post
