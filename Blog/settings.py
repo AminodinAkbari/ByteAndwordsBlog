@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # not built in Apps:
-    'Posts.apps.PostsConfig'
+    'Posts.apps.PostsConfig',
+    # Pip packages
+    'django_prose_editor'
 ]
 
 MIDDLEWARE = [

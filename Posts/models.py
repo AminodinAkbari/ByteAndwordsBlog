@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.urls import reverse
+from django_prose_editor.fields import ProseEditorField
 
 class Category(models.Model):
     name = models.CharField(max_length=60)
@@ -37,7 +38,7 @@ class Post(models.Model):
     )
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True , blank=True)
-    content = models.TextField()
+    content = ProseEditorField()
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
