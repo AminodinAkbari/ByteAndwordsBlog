@@ -12,10 +12,9 @@
     <nav>
         <ul>
             <li><a href="#">Home</a></li>
-            <li><a href="#">Templates</a></li>
+            <li><a href="/login_and_register">Login/Register</a></li>
             <li><a href="#" class="active">Blog</a></li>
-            <li><a href="#">Notes</a></li>
-            <li><a href="#">Bookmarks</a></li>
+
         </ul>
     </nav>
 
@@ -38,6 +37,7 @@
 
                 </a>
                 <p class="excerpt">
+                    <!-- {{ post.media }} -->
                     {{ post.content|truncatewords:20 }}
                 </p>
             </article>
