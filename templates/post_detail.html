@@ -6,8 +6,8 @@
     <title>Document</title>
 </head>
 <body>
-    title : {{post.title}}
+    <h1>{{post.title}}</h1>
     <br>
-    content : {{post.content}}
+    {{post.content|safe}}
 </body>
 </html>
