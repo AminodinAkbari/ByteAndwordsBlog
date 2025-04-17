@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # not built in Apps:
     'Posts.apps.PostsConfig',
+    'User.apps.UserConfig',
     # Pip packages
     'django_prose_editor'
 ]
