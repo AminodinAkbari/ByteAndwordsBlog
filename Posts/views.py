@@ -8,9 +8,11 @@ from Posts.models import Post
 from django.views.generic import DetailView
 from django.shortcuts import get_object_or_404
 
+from django.utils import timezone
+
 def post_list(request):
-    # list all the posts
-    all_posts = Post.objects.all()
+    # list all the published posts
+    all_posts = Post.objects.filter(status='published' , published__lte=timezone.now())
     
     return render(request, 'post_list.html', {'all_posts': all_posts})
 
@@ -22,7 +24,8 @@ class PostDetailView(DetailView):
     def get_object(self, queryset=None):
         # get the post by slug
         slug = self.kwargs.get('post_slug')
-        return get_object_or_404(Post, slug=slug)
+        result = get_object_or_404(Post, slug=slug)
+        return result
 
 
 """

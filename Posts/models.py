@@ -41,6 +41,7 @@ class Post(models.Model):
     content = ProseEditorField()
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(auto_now=True)
+    published = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     tags = models.ManyToManyField(Tag, blank=True, related_name='blog_posts')
@@ -48,8 +49,12 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
 
     def save(self , *args, **kwargs):
+        # if the slug is not set, set it automatically based on the title
         if not self.slug:
             self.slug = slugify(self.title)
+        # if the post is published, set the published date
+        if self.status == 'published' and not self.published:
+            self.published = timezone.now()
         super(Post, self).save(*args, **kwargs)
         
     def get_absolute_url(self):
