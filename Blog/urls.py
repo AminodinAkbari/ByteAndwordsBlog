@@ -24,4 +24,5 @@ urlpatterns = [
     path('', postViews.post_list, name='post_list'),
     path('post/<str:post_slug>', postViews.PostDetailView.as_view(), name='detail_view'),
     path('login_and_register/', userViews.login_and_register, name='login_and_register'),
+    path('add_comment/<str:post_slug>/', postViews.PostDetailView.post, name='add_comment'),
 ]

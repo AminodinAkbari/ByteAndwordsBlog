@@ -41,7 +41,7 @@ class Post(models.Model):
     content = ProseEditorField()
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(auto_now=True)
-    published = models.DateTimeField(null=True, blank=True)
+    published = models.DateTimeField(blank=True , default=timezone.now , null=True) # if the post is published, set the published date (automatically set when the model updated) (if the post is not published, set the published date to nul)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     tags = models.ManyToManyField(Tag, blank=True, related_name='blog_posts')

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # not built in Apps:
     'Posts.apps.PostsConfig',
     'User.apps.UserConfig',
+    'Comment.apps.CommentConfig',
     # Pip packages
     'django_prose_editor'
 ]
