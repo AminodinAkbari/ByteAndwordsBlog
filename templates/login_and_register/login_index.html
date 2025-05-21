@@ -3,30 +3,34 @@
 <html>
     <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
 <body>
+    {{username}}
+    {{password}}
     <div id="container" class="container">
     <!-- FORM SECTION -->
     <div class="row">
         <!-- SIGN UP -->
-        <div class="col align-items-center flex-col sign-up">
+        <form class="col align-items-center flex-col sign-up" method="post" , action="{% url 'login_and_register' %}">
+            {% csrf_token %}
             <div class="form-wrapper align-items-center">
                 <div class="form sign-up">
                     <div class="input-group">
                         <i class='bx bxs-user'></i>
-                        <input type="text" placeholder="Username">
+                        <input type="text" value="signup" hidden name="hidden">
+                        <input type="text" placeholder="Username" name="username">
                     </div>
                     <div class="input-group">
                         <i class='bx bx-mail-send'></i>
-                        <input type="email" placeholder="Email">
+                        <input type="email" placeholder="Email" name="email">
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="password" placeholder="Password">
+                        <input type="password" placeholder="Password" name="password">
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="password" placeholder="Confirm password">
+                        <input type="password" placeholder="Confirm password" , name="confirm_password">
                     </div>
-                    <button>
+                    <button type="submit">
                         Sign up
                     </button>
                     <p>
@@ -40,21 +44,22 @@
                 </div>
             </div>
         
-        </div>
+        </form>
         <!-- END SIGN UP -->
         <!-- SIGN IN -->
-        <div class="col align-items-center flex-col sign-in">
+        <form class="col align-items-center flex-col sign-in" method="post" , action="{% url 'login_and_register' %}">
+            {% csrf_token %}
             <div class="form-wrapper align-items-center">
                 <div class="form sign-in">
                     <div class="input-group">
                         <i class='bx bxs-user'></i>
-                        <input type="text" placeholder="Username">
+                        <input type="text" placeholder="Username" name="username">
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="password" placeholder="Password">
+                        <input type="password" placeholder="Password" name="password">
                     </div>
-                    <button>
+                    <button type="submit">
                         Sign in
                     </button>
                     <p>
@@ -75,7 +80,7 @@
             <div class="form-wrapper">
     
             </div>
-        </div>
+        </form>
         <!-- END SIGN IN -->
     </div>
     <!-- END FORM SECTION -->
