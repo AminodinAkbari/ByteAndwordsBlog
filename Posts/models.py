@@ -24,12 +24,20 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
+    def save(self):
+        if not self.slug:
+            self.slug = slugify(self.name)
+    
 class Tag(models.Model):
     name = models.CharField(max_length=60)
     slug = models.SlugField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
+    
+    def save(self):
+        if not self.slug:
+            self.slug = slugify(self.name)
     
 class Post(models.Model):
     STATUS_CHOICES = (
@@ -49,7 +57,6 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
 
     def save(self , *args, **kwargs):
-        # if the slug is not set, set it automatically based on the title
         if not self.slug:
             self.slug = slugify(self.title)
         # if the post is published, set the published date
