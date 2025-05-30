@@ -1,15 +1,67 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from User.forms import LoginForm
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
+from django.views import View
 
 
 # TODO:Use class base view (if you want) but it's so better if you separate the rendering funciton from login and registers processes
     # TODO: Also you should use biult in djanfo forms. 
 # TODO: Are you sure the hidden input is a correct way ?
 # Using captcha can be done with this : https://django-simple-captcha.readthedocs.io/en/latest/usage.html#installation. before that , we need use buit in Forms and use class base view
+
+class LoginAndRegisterView(View):
+    form_class = LoginForm()
+    initial_form = {"loginForm" : form_class}
+    # TODO: Change the template name it self. it's a bad name
+    template_name = 'login_and_register/login_index.html'
+
+    def get(self, request):
+        return render(request , self.template_name , self.initial_form)
+    
+    def post(self , request , *args , **kwargs):
+        print("post is started")
+
+        login_form =self.form_class
+
+        if login_form.is_valid():
+            print("forms are valid")
+            username = login_form.username
+            password = login_form.password
+
+            if 'confirmPassword' in request.POST:
+                print("this request is signup")
+                pass
+            elif 'username' in request.POST and 'password' in request.POST:
+                print("This request is login")
+                # Authenticate the user with the provided username and password
+                user = authenticate(username=username, password=password)
+                print("user authenticated")
+                
+                if user is None:
+                    print("User is none.")
+                    # Display an error message if authentication fails (invalid password)
+                    messages.error(request, "Invalid Password")
+                    return redirect('/login_register/')
+                else:
+                    print("user vaild. we loging it in ... ")
+                    # Log in the user and redirect to the home page upon successful login
+                    login(request, user)
+                    print("user logged in")
+                    return redirect('/')
+                
+            else:
+                print("Form is not valid")
+                return redirect('/login_register')
+        else:
+            print("Form is not valid!")
+            print(f"The form is : {login_form}")
+        return render(request , self.template_name , self.initial_form)
+
+
+
 
 def login_and_register(request):
 
