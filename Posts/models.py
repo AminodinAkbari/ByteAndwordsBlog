@@ -54,6 +54,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     tags = models.ManyToManyField(Tag, blank=True, related_name='blog_posts')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='blog_posts')
+    # TODO: images should saved in another directory
     image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
 
     def save(self , *args, **kwargs):
