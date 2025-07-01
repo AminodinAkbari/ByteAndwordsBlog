@@ -49,7 +49,7 @@
                 </a>
                 <p class="excerpt">
                     <!-- {{ post.media }} -->
-                    {{ post.content|truncatewords:20 }}
+                    {{ post.content|striptags|truncatewords:20 }}
                 </p>
             </article>
             {% endfor %}
