@@ -3,32 +3,30 @@
 <html>
     <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
 <body>
-    {{username}}
-    {{password}}
     <div id="container" class="container">
     <!-- FORM SECTION -->
     <div class="row">
         <!-- SIGN UP -->
-        <form class="col align-items-center flex-col sign-up" method="post" , action="{% url 'login_and_register' %}">
+        <form class="col align-items-center flex-col sign-up" method="post" , action="{% url 'LoginAndRegisterUrl' %}">
             {% csrf_token %}
+            <input type="hidden" name="action" value="register">
             <div class="form-wrapper align-items-center">
                 <div class="form sign-up">
                     <div class="input-group">
                         <i class='bx bxs-user'></i>
-                        <input type="text" value="signup" hidden name="hidden">
-                        <input type="text" placeholder="Username" name="username">
+                        {{ register_form.username }}
                     </div>
                     <div class="input-group">
                         <i class='bx bx-mail-send'></i>
-                        <input type="email" placeholder="Email" name="email">
+                        {{ register_form.email }}
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="password" placeholder="Password" name="password">
+                        {{ register_form.password }}
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="password" placeholder="Confirm password" , name="confirm_password">
+                        {{ register_form.confirm_password }}
                     </div>
                     <button type="submit">
                         Sign up
@@ -49,21 +47,25 @@
         <!-- SIGN IN -->
         <form class="col align-items-center flex-col sign-in" method="post" , action="{% url 'LoginAndRegisterUrl' %}">
             {% csrf_token %}
+            <input type="hidden" name="action" value="login">
             <div class="form-wrapper align-items-center">
                 <div class="form sign-in">
+        {% for message_ in messages %}
+            <ul>
+                {% if message_.tags == 'error' %}<b style="color: red;">{{message_}}</b>{% endif %}
+            </ul>
+        {% endfor %}
                     <div class="input-group">
                         <i class='bx bxs-user'></i>
-                        <!-- <input type="text" placeholder="Username" name="username"> -->
-                         {{loginForm.username}}
+                         {{ login_form.username }}
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <!-- <input type="password" placeholder="Password" name="password"> -->
-                         {{loginForm.password}}
+                         {{ login_form.password }}
                     </div>
-                    <button type="submit">
-                        Sign in
-                    </button>
+                        <button type="submit">
+                            Sign in
+                        </button>
                     <p>
                         <b>
                             Forgot password?
