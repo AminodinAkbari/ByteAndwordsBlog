@@ -9,10 +9,21 @@
     <link rel="stylesheet" href="{% static 'styles/blogs_styles.css' %}">
 </head>
 <body>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <nav>
         <ul>
             <li><a href="#">Home</a></li>
-            <li><a href="/login_and_register">Login/Register</a></li>
+            {% if request.is_authenticated %}
+                <li><a href="logout/">Logout</a></li>
+            {% else %}
+            <li><a href="/login_register">Login/Register</a></li>
+            {% endif %}
             <li><a href="#" class="active">Blog</a></li>
 
         </ul>

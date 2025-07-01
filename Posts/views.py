@@ -15,7 +15,7 @@ from django.utils import timezone
 def post_list(request):
     # list all the published posts
     all_posts = Post.objects.filter(status='published' , published__lte=timezone.now())
-    return render(request, 'post_list.html', {'all_posts': all_posts})
+    return render(request, 'post_list.html', {'all_posts': all_posts , 'request' : request.user})
 
 
 class PostDetailView(DetailView):
