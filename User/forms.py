@@ -31,28 +31,28 @@ class RegisterationForm(forms.ModelForm):
             })
         }
 
-        def clean(self):
-            print("clean run.")
-            # First, get the cleaned data from the parent class
-            cleaned_data = super().clean()
+    def clean(self):
+        print("clean run.")
+        # First, get the cleaned data from the parent class
+        cleaned_data = super().clean()
 
-            password = cleaned_data.get('password')
-            confirm_password = cleaned_data.get('confirm_password')
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
 
-            if password and confirm_password and password != confirm_password:
-                print("here we are")
-                raise forms.ValidationError("Passwords are not match")
-            print("It's cleaned")
-            print(password)
-            print(confirm_password)
-            return cleaned_data
+        if password and confirm_password and password != confirm_password:
+            print("here we are")
+            raise forms.ValidationError("Passwords are not match")
+        print("It's cleaned")
+        print(password)
+        print(confirm_password)
+        return cleaned_data
 
-        def save(self , commit=True):
-            # Get writed password in form
-            password = self.cleaned_data.get("password")
-            # Save new user objecct in db
-            user = super().save(commit=False)
-            user.set_password(password)
-            if commit:
-                user.save()
-            return user
+    def save(self , commit=True):
+        # Get writed password in form
+        password = self.cleaned_data.get("password")
+        # Save new user objecct in db
+        user = super().save(commit=False)
+        user.set_password(password)
+        if commit:
+            user.save()
+        return user
