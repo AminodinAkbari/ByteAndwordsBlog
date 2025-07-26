@@ -1,7 +1,9 @@
 from django import forms
 from Comment.models import CommentModel
+from captcha.fields import CaptchaField
 
 class CommentForm(forms.ModelForm):
+    captcha = CaptchaField()
     content = forms.CharField(
         widget = forms.Textarea(
             attrs = {
