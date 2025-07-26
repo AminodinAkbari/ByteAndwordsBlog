@@ -24,8 +24,21 @@
         {% csrf_token %}
         <textarea name="content" rows="4" cols="50"></textarea>
         <br>
-        <button type="submit">Add Comment</button>
+        {% if request.user.is_authenticated %}
+            <button type="submit">Add Comment</button>
+        {% else %}
+            <p style="color: red;">Please login to add a comment</p>
+        {% endif %}
     </form>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div style="color: green;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <hr>
     <a href="{% url 'post_list' %}">Back to Post List</a>
     
