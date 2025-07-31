@@ -34,37 +34,34 @@ class PostDetailView(DetailView):
 
         post = self.object
 
-        context['comments'] = CommentModel.objects.filter(post=post , is_approved=True).order_by('created_at') # Example ordering
+        context['comments'] = CommentModel.objects.filter(post=post , is_approved=True).order_by('created_at')
         context['comment_form'] = CommentForm()
 
         return context
 
     def post(self, request, *args, **kwargs):
-        # Handle POST request
+        """Handle POST request"""
         # TODO: Move comment creation to Comment/views.py file.
-        
+
         if not request.user.is_authenticated:
             return redirect('LoginAndRegisterUrl')
         
-        post = self.get_object()
-        form_data = CommentForm(request.POST)
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
 
-        if form_data.is_valid():
-            # Add new comment to the post but not save it yet (commit=False)
-            new_comment = form_data.save(commit=False)
-
-            # Assign current post and user to the new comment
-            new_comment.post = post
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.post = self.object
             new_comment.author = request.user
-
-            # Save the new comment
             new_comment.save()
-
             messages.success(request, 'Your comment has been submitted and is awaiting approval.')
-
-            return redirect(post.get_absolute_url())
-
-        return redirect(post.get_absolute_url())
+            return redirect(self.object.get_absolute_url())
+        
+        # If the form is NOT valid, re-render the page with the form containing the errors
+        else:
+            context = self.get_context_data(**kwargs)
+            context['comment_form'] = form
+            return self.render_to_response(context)
 
 
 

@@ -22,7 +22,7 @@
     <h2 style="margin-top: 400 px;">Add a Comment</h2>
     <form method="post" action="">
         {% csrf_token %}
-        <textarea name="content" rows="4" cols="50"></textarea>
+        {{ comment_form.as_p }}
         <br>
         {% if request.user.is_authenticated %}
             <button type="submit">Add Comment</button>
