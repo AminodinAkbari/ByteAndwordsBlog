@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CAPTCHA_BACKGROUND_COLOR = '#f2f2f2'  # A light grey background
+CAPTCHA_FOREGROUND_COLOR = '#004080'  # A nice dark blue for the text
+CAPTCHA_FONT_SIZE = 30
+CAPTCHA_LETTER_ROTATION = (-15, 15)  # A slight rotation
+CAPTCHA_NOISE_FUNCTIONS = (
+    # 'captcha.helpers.noise_arcs', # Comment out or remove to get rid of arcs
+    'captcha.helpers.noise_dots',   # Keep dots for some texture
+)
+CAPTCHA_FILTER_FUNCTIONS = ()
 
 # Application definition
 
@@ -42,7 +51,8 @@ INSTALLED_APPS = [
     'User.apps.UserConfig',
     'Comment.apps.CommentConfig',
     # Pip packages
-    'django_prose_editor'
+    'django_prose_editor',
+    'captcha'
 ]
 
 MIDDLEWARE = [
