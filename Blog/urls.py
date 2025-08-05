@@ -16,12 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from Posts.views import PostListAPIView
+from Posts.views import *
 from User import views as userViews
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', PostListAPIView.as_view() , name = 'post-list'),
+    path('<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
     path('login_register/' , userViews.LoginAndRegisterView.as_view() , name='LoginAndRegisterUrl'),
     path('logout/', userViews.logout_view, name='logout'),
     # Captcha url
