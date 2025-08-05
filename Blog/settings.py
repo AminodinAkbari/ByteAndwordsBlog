@@ -47,12 +47,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # not built in Apps:
-    'Posts.apps.PostsConfig',
-    'User.apps.UserConfig',
-    'Comment.apps.CommentConfig',
+    'Posts',
+    'User',
+    'Comment',
     # Pip packages
     'django_prose_editor',
-    'captcha'
+    'captcha',
+    # REST
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
