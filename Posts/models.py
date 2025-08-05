@@ -19,25 +19,27 @@ from django_prose_editor.fields import ProseEditorField
 
 class Category(models.Model):
     name = models.CharField(max_length=60)
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
 
     def __str__(self):
         return self.name
     
-    def save(self):
+    def save(self , *args , **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        super(Category , self).save(*args , **kwargs)
     
 class Tag(models.Model):
     name = models.CharField(max_length=60)
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
 
     def __str__(self):
         return self.name
     
-    def save(self):
+    def save(self , *args , **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        super(Tag , self).save(*args , **kwargs)
     
 class Post(models.Model):
     STATUS_CHOICES = (
@@ -51,9 +53,9 @@ class Post(models.Model):
     updated = models.DateTimeField(auto_now=True)
     published = models.DateTimeField(blank=True , default=timezone.now , null=True) # if the post is published, set the published date (automatically set when the model updated) (if the post is not published, set the published date to nul)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='blog_posts')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='blog_posts')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, blank=True)
+    category = models.ManyToManyField(Category)
     # TODO: images should saved in another directory
     image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
 
