@@ -22,7 +22,7 @@ class CommentModel(models.Model):
     """
     This class defines the model for the comments section of the blog.
     """
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE , related_name='comments')
     # TODO: Change the model from User (from django.contrib.auth.models) to a custom user model if you create one (another user model in User/models.py)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
