@@ -67,3 +67,23 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'author_username',
             'comments'
         ]
+        
+class PostDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for post detail.
+    """
+    author_username = serializers.CharField(source = 'author.username' , read_only = True)
+    comments = CommentSerializer(many = True, read_only = True)
+    
+    class Meta:
+        model = Post
+        fields = [
+            'id',
+            'slug',
+            'title',
+            'image',
+            'content',
+            'published',
+            'author_username',
+            'comments'
+        ]
