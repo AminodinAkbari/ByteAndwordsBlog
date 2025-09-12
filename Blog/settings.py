@@ -50,11 +50,13 @@ INSTALLED_APPS = [
     'Posts',
     'User',
     'Comment',
+    'Authorization',
     # Pip packages
     'django_prose_editor',
     'captcha',
     # REST
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -98,6 +100,13 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'Authorization.CustomAuthenticationUser'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
