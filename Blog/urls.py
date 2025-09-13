@@ -18,12 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from Posts.views import *
 from User import views as userViews
+from Authorization import views as authViews
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', PostListAPIView.as_view() , name = 'post-list'),
-    path('<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
-    path('login_register/' , userViews.LoginAndRegisterView.as_view() , name='LoginAndRegisterUrl'),
+    path('posts-list/', PostListAPIView.as_view() , name = 'post-list'),
+    path('posts-list/<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
+    # path('login_register/' , userViews.LoginAndRegisterView.as_view() , name='LoginAndRegisterUrl'),
+    path('users/' , authViews.UserAPIView.as_view() , name='UsersList'),
     path('logout/', userViews.logout_view, name='logout'),
     # Captcha url
     path('captcha/', include('captcha.urls')),
