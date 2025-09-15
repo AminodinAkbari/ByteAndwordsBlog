@@ -15,7 +15,8 @@ methods:
 from django.urls import reverse
 from django.db import models
 from Posts.models import Post
-from django.contrib.auth.models import User
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
 
 # Create your models here.
 class CommentModel(models.Model):
