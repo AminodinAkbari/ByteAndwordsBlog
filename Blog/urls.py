@@ -17,16 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from Posts.views import *
-from User import views as userViews
-from Authorization import views as authViews
+from Authorization.views import UserAPIView
+
+from rest_framework.authtoken import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('posts-list/', PostListAPIView.as_view() , name = 'post-list'),
-    path('posts-list/<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
-    # path('login_register/' , userViews.LoginAndRegisterView.as_view() , name='LoginAndRegisterUrl'),
-    path('users/' , authViews.UserAPIView.as_view() , name='UsersList'),
-    path('logout/', userViews.logout_view, name='logout'),
-    # Captcha url
-    path('captcha/', include('captcha.urls')),
+    path('', PostListAPIView.as_view() , name = 'post-list'),
+    path('post/<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
+    path('users/', UserAPIView.as_view(), name='users-list'),
+]
+
+urlpatterns += [
+    path('api-token-auth/', views.obtain_auth_token)
 ]
