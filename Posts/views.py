@@ -20,7 +20,7 @@ class PostListAPIView(generics.ListAPIView):
     serializer_class = PostSerializer
     # Anyone can view the list of posts
     permission_classes = [permissions.AllowAny]
-    
+
 class PostDetailRetrieveAPIView(generics.RetrieveAPIView):
     """
     Api view to see a post detail using it's slug (only published posts)
@@ -28,23 +28,18 @@ class PostDetailRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Post.objects.filter(status = 'published')
     serializer_class = PostDetailSerializer
     permission_classes = [permissions.AllowAny]
-    
+
     lookup_field = 'slug'
     lookup_url_kwarg = 'post_slug'
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
-        available_comments = CommentModel.objects.filter(is_approved = True) 
+        available_comments = CommentModel.objects.filter(is_approved = True)
         print("Comments :" ,available_comments)
-        
+
         return queryset.prefetch_related(
             Prefetch('comments', queryset = available_comments)
         )
-    
-    # def get_serializer_context(self):
-    #     context= super().get_serializer_context()
-    #     post = self.get_object()
-    #     print(post.comments.filter(is_approved = True))
-    #     context['post_comments'] = post.comments.set(CommentModel.objects.filter(post=post, is_approved=True))
+
 
     #     return context
