@@ -6,15 +6,13 @@ from rest_framework.authtoken.models import Token
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+def avatar_upload_to(instance , filename):
+    return f"avatars/{instance.id}/{filename}"
+
 class CustomAuthenticationUser(AbstractUser):
     email = models.EmailField(unique=True)
-    # By default , username is unique too.
+    bio = models.TextField(max_length = 250, blank=True ,null=True)
+    avatar = models.ImageField(upload_to=avatar_upload_to , blank=True , null=True)
 
     def __str__(self):
         return self.username
-
-@receiver(post_save , sender = settings.AUTH_USER_MODEL)
-def create_auth_token(sender , instance = None , created = False , **kwargs):
-    print("WOW THE SIGNAL IS WORKING !")
-    if created:
-        Token.objects.create(user=instance)
