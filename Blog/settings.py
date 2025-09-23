@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     # Empty
     # REST
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -61,6 +61,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Blog.urls'
 
+# TODO: do we need TEMPLATES default variable ? we not using html in this project.
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -94,7 +95,11 @@ AUTH_USER_MODEL = 'Authorization.CustomAuthenticationUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
@@ -131,6 +136,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 STATIC_URL = 'static/'
 
