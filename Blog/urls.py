@@ -15,16 +15,34 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from Posts import views as postViews
-from User import views as userViews
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import path, include
+from Posts.views import *
+from Authorization.views import CurrentUserAPI
+from User.views import meViewSet
+
+from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', postViews.post_list, name='post_list'),
-    path('post/<str:post_slug>', postViews.PostDetailView.as_view(), name='detail_view'),
-    # path('login_and_register/', userViews.login_and_register, name='login_and_register'),
-    path('login_register/' , userViews.LoginAndRegisterView.as_view() , name='LoginAndRegisterUrl'),
-    path('logout/', userViews.logout_view, name='logout'),
-    path('add_comment/<str:post_slug>/', postViews.PostDetailView.post, name='add_comment'),
+    path('', PostListAPIView.as_view() , name = 'post-list'),
+    path('post/<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
+    path('me/', CurrentUserAPI.as_view(), name='users-list'),
+
+    # Button for login/logout pages for the DRF browsable API only.
+    path('api-auth/', include('rest_framework.urls')),
+] + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
+
+# Include tokens
+urlpatterns += [
+    path('token/' , TokenObtainPairView.as_view() , name="token_obtain"),
+    path('token/refresh' , TokenRefreshView.as_view() , name="token_refresh")
 ]
+
+# Including all current user urls
+me_avatar = meViewSet.as_view({"patch" : "avatar"})
+me_view_urls = [
+    path('me/avatar/' , me_avatar , name = "current_user_change_avatar")
+]
+urlpatterns += me_view_urls

@@ -15,14 +15,15 @@ methods:
 from django.urls import reverse
 from django.db import models
 from Posts.models import Post
-from django.contrib.auth.models import User
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
 
 # Create your models here.
 class CommentModel(models.Model):
     """
     This class defines the model for the comments section of the blog.
     """
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE , related_name='comments')
     # TODO: Change the model from User (from django.contrib.auth.models) to a custom user model if you create one (another user model in User/models.py)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()

@@ -4,3 +4,6 @@ migrations
 __init__.py
 .idea
 /venv
+.*
+/posts
+/media
