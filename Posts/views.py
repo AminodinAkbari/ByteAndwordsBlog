@@ -9,7 +9,7 @@ from Posts.models import Post
 from Comment.models import CommentModel
 # Import our new serializers
 from Posts.serializer import PostSerializer, PostDetailSerializer
-
+from Posts.pagination import NormalResultsPagination
 
 class PostListAPIView(generics.ListAPIView):
     """
@@ -20,6 +20,7 @@ class PostListAPIView(generics.ListAPIView):
     serializer_class = PostSerializer
     # Anyone can view the list of posts
     permission_classes = [permissions.AllowAny]
+    pagination_class = NormalResultsPagination
 
 class PostDetailRetrieveAPIView(generics.RetrieveAPIView):
     """
