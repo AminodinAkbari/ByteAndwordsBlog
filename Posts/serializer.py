@@ -12,7 +12,7 @@ class TagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['id' , 'name' , 'slug']
-        
+
 class CategorySerializer(serializers.ModelSerializer):
     """
     Serializer for Tag mode.
@@ -45,17 +45,17 @@ class PostSerializer(serializers.ModelSerializer):
             'author_username',
             'category',
             # TODO: When I add an image , in API result I see 404 in final link. fix it.
-            'image'
+            'cover_image'
         ]
         read_only_fields = ['author_username']
-        
+
 class PostDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for post detail (Post model)
     """
     author_username = serializers.CharField(source='author.username', read_only=True)
     comments = CommentSerializer(many = True , read_only = True)
-    
+
     class Meta:
         model = Post
         fields = [
@@ -67,14 +67,14 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'author_username',
             'comments'
         ]
-        
+
 class PostDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for post detail.
     """
     author_username = serializers.CharField(source = 'author.username' , read_only = True)
     comments = CommentSerializer(many = True, read_only = True)
-    
+
     class Meta:
         model = Post
         fields = [
