@@ -13,9 +13,10 @@ from Comment.models import CommentModel
 from Posts.serializer import PostSerializer, PostDetailSerializer
 from Posts.pagination import NormalResultsPagination
 
+# TODO: In this class have repeated "status=published" for showing posts.try this method be DRY.
 class PostViewSet(viewsets.ViewSet):
 
-    """ Thsi view will do these things : list all posts, retrieve by slug ,list posts accourding to a tag and create new posts.
+    """ This view will do these things : list all posts, retrieve by slug ,list posts accourding to a tag and create new posts.
     """
 
     def list(self, request):
@@ -30,13 +31,13 @@ class PostViewSet(viewsets.ViewSet):
           without pagination.
         - ViewSet not support default pagination in settings file.
         """
-        queryset = Post.objects.all()
+        queryset = Post.objects.filter(status='published')
         paginator = NormalResultsPagination()
 
         pages = paginator.paginate_queryset(queryset , request , view=self)
 
         if pages is not None:
-            serializer = PostSerializer(pages , many=True)
+            serializer = PostSerializer(pages , many='published')
             return paginator.get_paginated_response(serializer.data)
 
         serializer = PostSerializer(queryset , many = True)
@@ -44,7 +45,7 @@ class PostViewSet(viewsets.ViewSet):
 
     def retrieve(self , request , slug):
         """ Get a post accourding to requested slug. """
-        queryset = Post.objects.all()
+        queryset = Post.objects.filter(status='published')
         retrieved_post = get_object_or_404(queryset , slug = slug)
         serializer = PostSerializer(retrieved_post)
         return Response(serializer.data)
@@ -52,7 +53,7 @@ class PostViewSet(viewsets.ViewSet):
     def retrieve_posts_by_tag(self , request, *args, **kwargs):
         """Reveive all posts those have requested tag. """
         tag = kwargs["tag"]
-        queryset = Post.objects.filter(tags__slug = tag)
+        queryset = Post.objects.filter(tags__slug = tag, status='published')
         serializer = PostSerializer(queryset , many = True)
         return Response(serializer.data)
 
