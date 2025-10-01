@@ -49,38 +49,8 @@ class Post(models.Model):
     )
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True , blank=True)
-    # TODO: Do we need 'ProseEditorField' in this API ?
-    content = ProseEditorField(
-        extensions={
-            # Core text formatting
-            "Bold": True,
-            "Italic": True,
-            "Strike": True,
-            "Underline": True,
-            "HardBreak": True,
-
-            # Structure
-            "Heading": {
-                "levels": [1, 2, 3, 4]  # Only allow h1, h2, h3
-            },
-            "BulletList": True,
-            "OrderedList": True,
-            "Blockquote": True,
-
-            # Advanced extensions
-            "Link": {
-                "enableTarget": True,  # Enable "open in new window"
-                "protocols": ["http", "https", "mailto"],  # Limit protocols
-            },
-            "Table": True,
-
-            # Editor capabilities
-            "History": True,       # Enables undo/redo
-            "HTML": True,          # Allows HTML view
-            "Typographic": True,   # Enables typographic chars
-        },
-        sanitize=True
-    )
+    # TODO: sanitize and secure the content from malicious inputs. do it with bleech in save method (for admin and API will work)
+    content = models.TextField()
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(auto_now=True)
     published = models.DateTimeField(blank=True , default=timezone.now , null=True) # if the post is published, set the published date (automatically set when the model updated)
@@ -89,7 +59,7 @@ class Post(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     category = models.ManyToManyField(Category)
     # TODO: images should saved in another directory
-    image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
+    cover_image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
 
     def save(self , *args, **kwargs):
         if not self.slug:
@@ -107,3 +77,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+# TODO: add model for images (not cover image , images for a posts)
+

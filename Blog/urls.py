@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from Posts.views import *
+from Posts.views import PostViewSet
 from Authorization.views import CurrentUserAPI
 from User.views import meViewSet
 
@@ -26,9 +26,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshVie
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', PostListAPIView.as_view() , name = 'post-list'),
-    path('post/<slug:post_slug>/', PostDetailRetrieveAPIView.as_view() , name = 'post-detail'),
-    path('me/', CurrentUserAPI.as_view(), name='users-list'),
+    path('posts/', PostViewSet.as_view({"get" : "list"}) , name = 'posts-list'),
+    path('posts/<slug:slug>/', PostViewSet.as_view({"get" : "retrieve"}) , name = 'post-detail'),
+    path('posts/by-tag/<tag>/' , PostViewSet.as_view({"get" : "retrieve_posts_by_tag"}) , name = 'post-by-tag'),
+    path('me/', CurrentUserAPI.as_view(), name='current-user'),
 
     # Button for login/logout pages for the DRF browsable API only.
     path('api-auth/', include('rest_framework.urls')),
