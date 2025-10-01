@@ -1,65 +1,31 @@
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
-from User.forms import LoginForm , RegisterationForm
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.views import View
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
 
-class LoginAndRegisterView(View):
-    template_name = 'login_and_register/login_index.html'
 
-    def get(self ,request):
-        login_form = LoginForm()
-        registerForm = RegisterationForm()
-        
-        context = {
-            "login_form": login_form,
-            "register_form": registerForm
-        }
+from Authorization.models import CustomAuthenticationUser
+from User.serializer import AvatarUploadSerializer
 
-        return render(request , self.template_name , context)
-    
-    def post(self , request):
-        # Pass empty form if the input data have error
+class meViewSet(viewsets.GenericViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AvatarUploadSerializer
 
-        context = {
-            "login_form" : LoginForm(),
-            "register_form" : RegisterationForm()
-        }
+    @action(detail = False,methods = ["patch"],url_path = "avatar")
+    def avatar(self , request):
 
-        # Use hidden input "action" for determine data type (register or login)
-        action = request.POST.get('action')
+        serializer = AvatarUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception = True)
 
-        if action == "register":
-            register_form_includes_data = RegisterationForm(request.POST)
-            if register_form_includes_data.is_valid():
-                user = register_form_includes_data.save()
-                login(request , user)
-                # TODO: we can use f string for add user email in success message
-                messages.success(request,f"User {user.username} registered successfuly !")
-                return redirect('/')
-        elif action == "login":
-            requested_login_form = LoginForm(request.POST)
-            if requested_login_form.is_valid():
-                print("Valid")
-                username = requested_login_form.cleaned_data.get("username")
-                password = requested_login_form.cleaned_data.get("password")
-                authentication = authenticate(username=username , password=password)
-                if authentication is not None:
-                    login(request , authentication)
-                    # TODO: # TODO: we can use f string for add user email in info message
-                    messages.info(request , "Welcome Back!")
-                    return redirect('/')
-                else:
-                    messages.error(request , "Username or password is wrong")
-            # Pass the form with errors back to the template
-            context['login_form'] = requested_login_form
-        else:
-            #TODO: remove this printt statments or set error handler
-            print("Not valid")
-        return render(request , self.template_name , context)
+        user = request.user
 
-def logout_view(request):
-    logout(request)
-    messages.error(request , "User logged out.")
-    return redirect('/') # Redirect to the home page after logout
+        # Get old avatar if exists and remove it from server storage
+        old_avatar = user.avatar.name if user.avatar else None
+
+        user.avatar = serializer.validated_data["avatar"]
+        user.save(update_fields = ["avatar"])
+
+        if old_avatar and old_avatar != user.avatar.name:
+            user._meta.get_field("avatar").storage.delete(old_avatar)
+
+        return Response({"avatar_url" : user.avatar.url if user.avatar else None} , status =status.HTTP_200_OK )

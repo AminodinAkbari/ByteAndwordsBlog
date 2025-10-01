@@ -38,11 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # not built in Apps:
-    'Posts.apps.PostsConfig',
-    'User.apps.UserConfig',
-    'Comment.apps.CommentConfig',
+    'Posts',
+    'User',
+    'Comment',
+    'Authorization',
     # Pip packages
-    'django_prose_editor'
+    # Empty
+    # REST
+    'rest_framework',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -57,6 +61,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Blog.urls'
 
+# TODO: do we need TEMPLATES default variable ? we not using html in this project.
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -86,6 +91,18 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'Authorization.CustomAuthenticationUser'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'Posts.pagination.NormalResultsPagination'
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -120,6 +137,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 STATIC_URL = 'static/'
 
