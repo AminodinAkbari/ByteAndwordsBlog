@@ -17,6 +17,8 @@ User = settings.AUTH_USER_MODEL
 from django.utils.text import slugify
 from django.urls import reverse
 from django_prose_editor.fields import ProseEditorField
+from Utils.html_sanitizer import PostHtmlContentSanitizer
+html_sanitizer = PostHtmlContentSanitizer()
 
 class Category(models.Model):
     name = models.CharField(max_length=60)
@@ -67,6 +69,12 @@ class Post(models.Model):
         # if the post is published, set the published date
         if self.status == 'published' and not self.published:
             self.published = timezone.now()
+
+        # sanitize post html content
+        if self.content:
+            self.content = html_sanitizer.sanitize_html(self.content)
+
+
         super(Post, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
