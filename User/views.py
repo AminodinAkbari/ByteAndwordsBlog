@@ -22,7 +22,7 @@ class meViewSet(viewsets.GenericViewSet):
         # Get old avatar if exists and remove it from server storage
         old_avatar = user.avatar.name if user.avatar else None
 
-        user.avatar = serializer.validated_data["avatar"]
+        user.avatar = serializer.validated_data["image"]
         user.save(update_fields = ["avatar"])
 
         if old_avatar and old_avatar != user.avatar.name:
