@@ -2,9 +2,6 @@ from Authorization.models import CustomAuthenticationUser
 from rest_framework import serializers
 from PIL import Image, UnidentifiedImageError
 
-MAX_AVATAR_MB = 5242880 # 5 MB in kilobyte format (5 * 1024 * 1024)
-ALLOWED_FORMATS = {"JPEG", "JPG", "PNG", "WEBP"}
-
 class UsersListingSerializer(serializers.ModelSerializer):
     """
     This serializer using when we want list all users.
@@ -37,13 +34,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = CustomAuthenticationUser.objects.create_user(**validated_data)
         return user
 
-class AvatarUploadSerializer(serializers.Serializer):
-    avatar = serializers.ImageField(required=True)
+class BaseImageUploaderSerializer(serializers.Serializer):
+    image = serializers.ImageField(required=True)
 
-    def validate_avatar(self, file):
+    MAX_IMAGE_MB = 5242880 # Default is 5 MB, it's in kilobyte format (5 * 1024 * 1024)
+    ALLOWED_FORMATS = {"JPEG", "JPG", "PNG", "WEBP"}
+
+    def validate_image(self, file):
         # 1) size check
-        if file.size > MAX_AVATAR_MB:
-            raise serializers.ValidationError(f"Avatar must be ≤ {MAX_AVATAR_MB} MB.")
+        if file.size > self.MAX_IMAGE_MB:
+            raise serializers.ValidationError(f"Image must be ≤ {self.MAX_IMAGE_MB} MB.")
 
         # 2) real image check + allowed formats
         # rewind is important because DRF may have already read the file pointer
@@ -64,9 +64,19 @@ class AvatarUploadSerializer(serializers.Serializer):
         finally:
             file.seek(0)
 
-        if fmt not in ALLOWED_FORMATS:
-            allowed = ", ".join(sorted(ALLOWED_FORMATS))
+        if fmt not in self.ALLOWED_FORMATS:
+            allowed = ", ".join(sorted(self.ALLOWED_FORMATS))
             raise serializers.ValidationError(f"Allowed formats: {allowed}.")
 
         return file
 
+class AvatarUploadSerializer(BaseImageUploaderSerializer):
+    MAX_IMAGE_MB = 2097152 # 2 MB
+    # ALLOWED_FORMATS same as parent
+
+class CoverImageUploadSerializer(BaseImageUploaderSerializer):
+    ...
+
+class PostInilineImageUploadSerializer(BaseImageUploaderSerializer):
+    MAX_IMAGE_MB = 8388608 # 8 MB
+    # ALLOWED_FORMATS same as parent
