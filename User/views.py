@@ -3,9 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 
-
 from Authorization.models import CustomAuthenticationUser
-from User.serializer import AvatarUploadSerializer
+from Posts.serializer import AvatarUploadSerializer
 
 class meViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated]

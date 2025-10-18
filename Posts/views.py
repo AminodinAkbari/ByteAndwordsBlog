@@ -4,13 +4,21 @@ This file contains the views for the Posts app. one of the views is FBV (Functio
 
 # Posts/views.py
 from rest_framework import viewsets, permissions
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
-from Posts.models import Post
+from rest_framework.mixins import (
+    CreateModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin
+)
+from Posts.models import Post,PostImages
 from Comment.models import CommentModel
 # Import our new serializers
-from Posts.serializer import PostSerializer, PostDetailSerializer
+from Posts.serializer import PostSerializer, PostDetailSerializer, PostsImagesSerializer
 from Posts.pagination import NormalResultsPagination
 
 # TODO: In this class have repeated "status=published" for showing posts.try this method be DRY.
@@ -56,4 +64,16 @@ class PostViewSet(viewsets.ViewSet):
         queryset = Post.objects.filter(tags__slug = tag, status='published')
         serializer = PostSerializer(queryset , many = True)
         return Response(serializer.data)
+class PostsImagesView(
+    viewsets.GenericViewSet,  # Base viewset
+    CreateModelMixin,         # POST
+    RetrieveModelMixin,      # GET /pk/
+    UpdateModelMixin,        # PUT/PATCH /pk/
+    DestroyModelMixin,       # DELETE /pk/
+    ListModelMixin           # GET /
+):
+    queryset = PostImages.objects.all()
+    serializer_class = PostsImagesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 

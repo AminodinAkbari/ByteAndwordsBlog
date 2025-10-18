@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from Posts.views import PostViewSet
+from Posts.views import PostViewSet,PostsImagesView
 from Authorization.views import CurrentUserAPI
 from User.views import meViewSet
 
@@ -29,6 +29,16 @@ urlpatterns = [
     path('posts/', PostViewSet.as_view({"get" : "list"}) , name = 'posts-list'),
     path('posts/<slug:slug>/', PostViewSet.as_view({"get" : "retrieve"}) , name = 'post-detail'),
     path('posts/by-tag/<tag>/' , PostViewSet.as_view({"get" : "retrieve_posts_by_tag"}) , name = 'post-by-tag'),
+    
+    path('post_images/', PostsImagesView.as_view({"get": "list", "post": "create"})),
+    
+    path('post_images/<pk>/', PostsImagesView.as_view({
+        "get": "retrieve", 
+        "delete": "destroy", 
+        "put": "update",
+        "patch": "partial_update"
+    })),
+    
     path('me/', CurrentUserAPI.as_view(), name='current-user'),
 
     # Button for login/logout pages for the DRF browsable API only.
@@ -47,3 +57,4 @@ me_view_urls = [
     path('me/avatar/' , me_avatar , name = "current_user_change_avatar")
 ]
 urlpatterns += me_view_urls
+

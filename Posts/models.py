@@ -10,6 +10,8 @@
 - Category: A many-to-one relationship to the category model, which represents the category of the post.
 - Image: The image of the post.
 """
+import os
+import shutil
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -60,8 +62,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
     category = models.ManyToManyField(Category)
-    # TODO: images should saved in another directory
-    cover_image = models.ImageField(upload_to='posts/%Y/%m/%d', blank=True)
+    cover_image = models.ImageField(upload_to='posts_cover/%Y/%m/%d', blank=True)
 
     def save(self , *args, **kwargs):
         if not self.slug:
@@ -74,8 +75,13 @@ class Post(models.Model):
         if self.content:
             self.content = html_sanitizer.sanitize_html(self.content)
 
-
         super(Post, self).save(*args, **kwargs)
+
+    # TODO: make delete of this model and next model DRY
+    def delete(self ,*args ,**kwargs):
+        post_images_folder_path = os.path.join(str(settings.MEDIA_ROOT) + f"/posts_images/{self.slug}")
+        shutil.rmtree(post_images_folder_path , ignore_errors = True)
+        super(Post, self).delete(*args , **kwargs)
 
     def get_absolute_url(self):
         return reverse('detail_view', args=[self.slug])
@@ -86,5 +92,17 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-# TODO: add model for images (not cover image , images for a posts)
+def post_article_location(self, filename):
+    return f"posts_images/{self.post.slug}/{filename}"
+
+class PostImages(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to = post_article_location)
+    alt = models.CharField(max_length = 300)
+    caption = models.TextField(null=True , blank = True)
+
+    def delete(self ,*args ,**kwargs):
+        post_images_folder_path = os.path.join(str(settings.MEDIA_ROOT) + f"/posts_images/{self.post.slug}")
+        shutil.rmtree(post_images_folder_path , ignore_errors = True)
+        super(PostImages , self).delete(*args , **kwargs)
 
