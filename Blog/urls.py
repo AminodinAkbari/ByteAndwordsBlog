@@ -16,34 +16,42 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf import settings
+from rest_framework.routers import DefaultRouter
 from django.conf.urls.static import static
 from django.urls import path, include
-from Posts.views import PostViewSet,PostsImagesView
+from Posts.views import (
+    PublishedPostViewSet,
+    CRUDPostsViewset,
+    PostsImagesView,
+    PostsByTagView,
+    )
 from Authorization.views import CurrentUserAPI
 from User.views import meViewSet
 
 from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshView
 
+router = DefaultRouter(trailing_slash=False) 
+router.register(r'posts-lists' , PublishedPostViewSet, basename = 'posts')
+router.register(r'post' , CRUDPostsViewset, basename = 'post')
+router.register(r'posts-by-tag' , PostsByTagView, basename = 'posts-by-tag')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('posts/', PostViewSet.as_view({"get" : "list"}) , name = 'posts-list'),
-    path('posts/<slug:slug>/', PostViewSet.as_view({"get" : "retrieve"}) , name = 'post-detail'),
-    path('posts/by-tag/<tag>/' , PostViewSet.as_view({"get" : "retrieve_posts_by_tag"}) , name = 'post-by-tag'),
-    
     path('post_images/', PostsImagesView.as_view({"get": "list", "post": "create"})),
-    
     path('post_images/<pk>/', PostsImagesView.as_view({
-        "get": "retrieve", 
-        "delete": "destroy", 
+        "get": "retrieve",
+        "delete": "destroy",
         "put": "update",
         "patch": "partial_update"
     })),
-    
+
     path('me/', CurrentUserAPI.as_view(), name='current-user'),
 
     # Button for login/logout pages for the DRF browsable API only.
     path('api-auth/', include('rest_framework.urls')),
 ] + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
+
+
 
 # Include tokens
 urlpatterns += [
@@ -56,5 +64,7 @@ me_avatar = meViewSet.as_view({"patch" : "avatar"})
 me_view_urls = [
     path('me/avatar/' , me_avatar , name = "current_user_change_avatar")
 ]
+
 urlpatterns += me_view_urls
+urlpatterns += router.urls
 
