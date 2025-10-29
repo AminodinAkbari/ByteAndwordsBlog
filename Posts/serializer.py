@@ -5,13 +5,14 @@ from Posts.models import Post, Tag, Category,PostImages
 from Comment.serializer import CommentSerializer
 from PIL import Image, UnidentifiedImageError
 
+# TODO: both of these serializers is like each other. we can make them one or make them inherits.
 class TagsSerializer(serializers.ModelSerializer):
     """
     Serializer for Tag mode.
     """
     class Meta:
         model = Tag
-        fields = ['id' , 'name' , 'slug']
+        exclude = ['id']
 
 class CategorySerializer(serializers.ModelSerializer):
     """
@@ -19,17 +20,19 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Category
-        fields = ['id' , 'name' , 'slug']
+        exclude = ['id']
 
 class PostSerializer(serializers.ModelSerializer):
     """
     Serializer for the Post model.
     """
-    # We can add extra fields or override existing ones here if needed
-    # For example, to show the username of the author instead of just the ID.
     author_username = serializers.CharField(source='author.username', read_only=True)
-    tags = TagsSerializer(many = True , read_only = True)
     category = CategorySerializer(many = True , read_only = True)
+    tags = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name'
+    )
 
     class Meta:
         model = Post
@@ -61,30 +64,14 @@ class PostDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
-            'slug',
             'content',
-            'published',
-            'author_username',
-            'comments'
-        ]
-
-class PostDetailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for post detail.
-    """
-    author_username = serializers.CharField(source = 'author.username' , read_only = True)
-    comments = CommentSerializer(many = True, read_only = True)
-
-    class Meta:
-        model = Post
-        fields = [
-            'id',
             'slug',
-            'title',
-            'image',
-            'content',
             'published',
+            'status',
+            'tags',
             'author_username',
+            'category',
+            'cover_image',
             'comments'
         ]
 
