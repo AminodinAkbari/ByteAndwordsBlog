@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'Comment',
     'Authorization',
     # Pip packages
-    # Empty
+    'django_filters',
     # REST
     'rest_framework',
     'rest_framework_simplejwt'
@@ -99,9 +99,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'Posts.pagination.NormalResultsPagination'
+    'DEFAULT_PAGINATION_CLASS': 'Posts.pagination.NormalResultsPagination',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
 }
 
 # Password validation
