@@ -22,6 +22,7 @@ from django_prose_editor.fields import ProseEditorField
 from Utils.html_sanitizer import PostHtmlContentSanitizer
 html_sanitizer = PostHtmlContentSanitizer()
 
+# TODO: Maybe it's good idea if we add relation between category and tags.
 class Category(models.Model):
     name = models.CharField(max_length=60)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
