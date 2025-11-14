@@ -30,16 +30,16 @@ from Posts.pagination import NormalResultsPagination
 from Posts.models import Post
 
 from Blog.custome_permissions import IsAdminOrReadOnly
-class PublishedPostsCustomMixins:
+class ALLPostsCustomMixins:
     """Custom Mixin to filter published posts."""
     def get_queryset(self):
-        return Post.objects.filter(status='published')
+        return Post.objects.all()
     
 class SlugLookupCustomMixin:
     """Custom Mixin to use slug as lookup field."""
     lookup_field = "slug"
     
-class PublishedPostBySlugMixin(PublishedPostsCustomMixins, SlugLookupCustomMixin):
+class PublishedPostBySlugMixin(ALLPostsCustomMixins, SlugLookupCustomMixin):
     """Custom mixin to retrieve a published post by slug."""
     ...
 
