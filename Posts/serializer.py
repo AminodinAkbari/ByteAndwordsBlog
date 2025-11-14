@@ -33,16 +33,15 @@ class PostSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='name'
     )
+    published_data = serializers.DateTimeField(source='published', read_only=True)
 
     class Meta:
         model = Post
         # These are the fields that will be converted to JSON
         fields = [
-            'id',
             'title',
-            'content',
             'slug',
-            'published',
+            'published_data',
             'status',
             'tags',
             'author_username',
