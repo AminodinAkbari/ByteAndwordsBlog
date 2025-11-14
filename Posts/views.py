@@ -3,11 +3,14 @@ This file contains the views for the Posts app. one of the views is FBV (Functio
 """
 
 # Posts/views.py
-from rest_framework import viewsets, permissions
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
-from rest_framework.response import Response
-from django.db.models import Prefetch
-from django.shortcuts import get_object_or_404
+from rest_framework import permissions
+from rest_framework.exceptions import NotFound
+from rest_framework.viewsets import (
+    ReadOnlyModelViewSet,
+    GenericViewSet,
+    ModelViewSet
+)
+
 from rest_framework.mixins import (
     CreateModelMixin,
     RetrieveModelMixin,
@@ -16,64 +19,66 @@ from rest_framework.mixins import (
     ListModelMixin
 )
 from Posts.models import Post,PostImages
-from Comment.models import CommentModel
-# Import our new serializers
-from Posts.serializer import PostSerializer, PostDetailSerializer, PostsImagesSerializer
+
+from Posts.serializer import (
+    PostSerializer,
+    PostsImagesSerializer,
+    PostDetailSerializer
+)
 from Posts.pagination import NormalResultsPagination
 
-# TODO: In this class have repeated "status=published" for showing posts.try this method be DRY.
-class PostViewSet(viewsets.ViewSet):
+from Posts.models import Post
 
-    """ This view will do these things : list all posts, retrieve by slug ,list posts accourding to a tag and create new posts.
-    """
+from Blog.custome_permissions import IsAdminOrReadOnly
+class PublishedPostsCustomMixins:
+    """Custom Mixin to filter published posts."""
+    def get_queryset(self):
+        return Post.objects.filter(status='published')
+    
+class SlugLookupCustomMixin:
+    """Custom Mixin to use slug as lookup field."""
+    lookup_field = "slug"
+    
+class PublishedPostBySlugMixin(PublishedPostsCustomMixins, SlugLookupCustomMixin):
+    """Custom mixin to retrieve a published post by slug."""
+    ...
 
-    def list(self, request):
-        """
-        Return a list of all posts.
+class PublishedPostViewSet(PublishedPostBySlugMixin, ReadOnlyModelViewSet):
+    """ This view listing all published posts. """
+    serializer_class = PostSerializer
+    pagination_class = NormalResultsPagination
 
-        This endpoint supports optional pagination through the `page_size` query parameter.
-        - If `page_size` is provided in the request URL (e.g. `?page_size=10`), results
-          are paginated using `NormalResultsPagination`, and the response will include
-          pagination metadata (count, next, previous, results).
-        - If `page_size` is not provided, all posts are returned in a single response
-          without pagination.
-        - ViewSet not support default pagination in settings file.
-        """
-        queryset = Post.objects.filter(status='published')
-        paginator = NormalResultsPagination()
+    
+class CRUDPostsViewset(
+    PublishedPostBySlugMixin,
+    ModelViewSet
+):
+    """ create,read,update and delete posts models."""
+    serializer_class = PostDetailSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    lookup_field = "slug"
+    
 
-        pages = paginator.paginate_queryset(queryset , request , view=self)
-
-        if pages is not None:
-            serializer = PostSerializer(pages , many='published')
-            return paginator.get_paginated_response(serializer.data)
-
-        serializer = PostSerializer(queryset , many = True)
-        return Response(serializer.data)
-
-    def retrieve(self , request , slug):
-        """ Get a post accourding to requested slug. """
-        queryset = Post.objects.filter(status='published')
-        retrieved_post = get_object_or_404(queryset , slug = slug)
-        serializer = PostSerializer(retrieved_post)
-        return Response(serializer.data)
-
-    def retrieve_posts_by_tag(self , request, *args, **kwargs):
-        """Reveive all posts those have requested tag. """
-        tag = kwargs["tag"]
-        queryset = Post.objects.filter(tags__slug = tag, status='published')
-        serializer = PostSerializer(queryset , many = True)
-        return Response(serializer.data)
 class PostsImagesView(
-    viewsets.GenericViewSet,  # Base viewset
-    CreateModelMixin,         # POST
+    GenericViewSet,
+    CreateModelMixin,        # POST
     RetrieveModelMixin,      # GET /pk/
     UpdateModelMixin,        # PUT/PATCH /pk/
     DestroyModelMixin,       # DELETE /pk/
     ListModelMixin           # GET /
 ):
+    """ This viewset provides CRUD operations for PostImages. """
     queryset = PostImages.objects.all()
     serializer_class = PostsImagesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
 
+class PostsByTagView(ReadOnlyModelViewSet):
+    serializer_class = PostSerializer
+    pagination_class = NormalResultsPagination
+    permission_classes = [permissions.AllowAny]
 
+    def get_queryset(self):
+        slug = self.request.query_params.get('tag')
+        if not slug:
+            return Post.objects.none()
+        return Post.objects.filter(status='published', tags__slug=slug).distinct()
