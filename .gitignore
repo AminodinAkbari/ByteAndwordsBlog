@@ -1,9 +1,9 @@
 db.sqlite3
 __pycache__
 migrations
-__init__.py
 .idea
 /venv
 .*
 /posts
 /media
+.env
