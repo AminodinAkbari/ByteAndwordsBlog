@@ -73,6 +73,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'cover_image',
             'comments'
         ]
+        read_only_fields = ['author_username']
 
 class BaseImageUploaderSerializer(serializers.Serializer):
     image = serializers.ImageField(required=True)
