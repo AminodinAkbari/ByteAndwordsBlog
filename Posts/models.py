@@ -62,10 +62,12 @@ class Post(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
-    category = models.ManyToManyField(Category)
+    category = models.ManyToManyField(Category, blank=True, null=True)
     cover_image = models.ImageField(upload_to='posts_cover/%Y/%m/%d', blank=True)
+    summary = models.TextField(blank=True, null=True)
 
     def save(self , *args, **kwargs):
+        request = kwargs.pop('request', None)
         if not self.slug:
             self.slug = slugify(self.title)
         # if the post is published, set the published date
@@ -76,7 +78,14 @@ class Post(models.Model):
         if self.content:
             self.content = html_sanitizer.sanitize_html(self.content)
 
+        # current user should be the author of the post
+        # TODO: can we remove this section and pass the responsability to DRF it self ?
+        if request is not None and not self.author_id:
+            self.author = request.user
+
         super(Post, self).save(*args, **kwargs)
+
+
 
     # TODO: make delete of this model and next model DRY
     def delete(self ,*args ,**kwargs):
