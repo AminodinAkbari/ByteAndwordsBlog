@@ -57,6 +57,9 @@ class CRUDPostsViewset(
     serializer_class = PostDetailSerializer
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = "slug"
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
     
 
 class PostsImagesView(
