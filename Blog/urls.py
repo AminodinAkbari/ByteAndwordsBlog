@@ -27,6 +27,7 @@ from Posts.views import (
     )
 from Authorization.views import CurrentUserAPI
 from User.views import meViewSet
+from Utils.Health.test_db_connection import health_check
 
 from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshView
 
@@ -65,6 +66,11 @@ me_view_urls = [
     path('me/avatar/' , me_avatar , name = "current_user_change_avatar")
 ]
 
+# Healt endpoints
+health_endpoints = [
+    path('db_health' , health_check , name = "database_health_check")
+]
+
 urlpatterns += me_view_urls
 urlpatterns += router.urls
-
+urlpatterns += health_endpoints
