@@ -24,6 +24,8 @@ from Posts.views import (
     CRUDPostsViewset,
     PostsImagesView,
     PostsByTagView,
+    CRUDTagView,
+    SearchPostsView
     )
 from Authorization.views import CurrentUserAPI
 from User.views import meViewSet
@@ -35,6 +37,7 @@ router = DefaultRouter(trailing_slash=False)
 router.register(r'posts-lists' , PublishedPostViewSet, basename = 'posts')
 router.register(r'post' , CRUDPostsViewset, basename = 'post')
 router.register(r'posts-by-tag' , PostsByTagView, basename = 'posts-by-tag')
+router.register(r'posts' , SearchPostsView , basename = 'posts-search')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,7 +49,13 @@ urlpatterns = [
         "patch": "partial_update"
     })),
 
-    path('me/', CurrentUserAPI.as_view(), name='current-user'),
+    path('tags/', CRUDTagView.as_view({"get" : "list"})),
+    path('tags/<slug>', CRUDTagView.as_view({
+        "post" : "create",
+        "get": "retrieve",
+        "delete": "destroy",
+        "patch": "partial_update"
+    })),
 
     # Button for login/logout pages for the DRF browsable API only.
     path('api-auth/', include('rest_framework.urls')),
