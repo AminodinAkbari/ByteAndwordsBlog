@@ -1,24 +1,21 @@
+import logging
 from django.db.models.signals import post_save
+from django.db import transaction
 from django.dispatch import receiver
 from Posts.models import Post
 
-from Blog.settings import OPENROUTER_API_KEY
-from openrouter import OpenRouter
+from Posts.tasks import generate_post_summary_task
 
+logger = logging.getLogger(__name__)
 
 # TODO: Controll post size that not too big for generating summery via AI. 
+# TODO: If this secion enable , got this :
+    # TypeError: generate_post_summary_task() takes 1 positional argument but 2 were given
 @receiver(post_save, sender=Post)
 def generate_summary(sender, instance, created, **kwargs):
-    print("SIGNAL called")
-    if created:
-        with OpenRouter(api_key=OPENROUTER_API_KEY) as client:
-            response = client.chat.send(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant that generates a summary of a post."},
-                    {"role": "user", "content": f"Generate a summary of the following post: {instance.content}"}
-                ]
-            )
-            instance.summary = response.choices[0].message.content
-            instance.save()
-            print("Summary saved successfully")
+    pass
+#    if created:
+#        print("THIS IS INSTANCE :" , instance.slug)
+#        transaction.on_commit(
+#            lambda: generate_post_summary_task.delay(instance.slug)
+#        )
