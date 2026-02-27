@@ -20,6 +20,9 @@ from django.utils.text import slugify
 from django.urls import reverse
 from django_prose_editor.fields import ProseEditorField
 from Utils.html_sanitizer import PostHtmlContentSanitizer
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
+
 html_sanitizer = PostHtmlContentSanitizer()
 
 # TODO: Maybe it's good idea if we add relation between category and tags.
@@ -43,8 +46,7 @@ class Tag(models.Model):
         return self.name
 
     def save(self , *args , **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        self.slug = slugify(self.name)
         super(Tag , self).save(*args , **kwargs)
 
 class Post(models.Model):
@@ -62,9 +64,27 @@ class Post(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
-    category = models.ManyToManyField(Category, blank=True, null=True)
+    category = models.ManyToManyField(Category, blank=True)
     cover_image = models.ImageField(upload_to='posts_cover/%Y/%m/%d', blank=True)
     summary = models.TextField(blank=True, null=True)
+
+    search_document = SearchVectorField(null=True, editable=False)
+
+    class Meta:
+        indexes = [
+            GinIndex(fields=["search_document"], name="post_search_gin"),
+            # typo tolerance indexes:
+            GinIndex(
+                fields=["title"],
+                name="post_title_trgm_gin",
+                opclasses=["gin_trgm_ops"],
+            ),
+            GinIndex(
+                fields=["content"],
+                name="post_content_trgm_gin",
+                opclasses=["gin_trgm_ops"],
+            ),
+        ]
 
     def save(self , *args, **kwargs):
         request = kwargs.pop('request', None)
@@ -95,9 +115,6 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('detail_view', args=[self.slug])
-
-    class Meta:
-        ordering = ('-created',)
 
     def __str__(self):
         return self.title

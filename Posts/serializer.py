@@ -41,13 +41,15 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [
             'title',
             'slug',
+            'content',
             'published_data',
             'status',
             'tags',
             'author_username',
             'category',
             # TODO: When I add an image , in API result I see 404 in final link. fix it.
-            'cover_image'
+            'cover_image',
+            'summary'
         ]
         read_only_fields = ['author_username']
 
